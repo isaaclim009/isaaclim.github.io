@@ -8,60 +8,67 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Define the font and base styles */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0d1117; /* GitHub-like dark background */
-            color: #c9d1d9; /* Light text color */
+            background-color: #f5f5f7; /* Apple's light gray background color */
+            color: #1d1d1f; /* Dark text color */
         }
         /* Custom styles for content that will be dynamically faded */
         .content {
-            transition: opacity 0.5s ease-out; /* Smooth transition for opacity changes */
+            transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* A more refined easing for the fade */
             opacity: 0; /* Start with content hidden */
+        }
+        /* Custom CSS for the floating header's blur effect */
+        .header-scrolled {
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            backdrop-filter: blur(20px); /* Blur effect */
+            -webkit-backdrop-filter: blur(20px); /* For Safari compatibility */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
         }
     </style>
 </head>
 <body>
     <!-- Floating Header -->
-    <header class="fixed top-0 left-0 right-0 z-50 p-6 bg-transparent transition-all duration-300 flex items-center justify-between">
+    <header class="fixed top-0 left-0 right-0 z-50 p-6 transition-all duration-300 flex items-center justify-between">
         <!-- Logo on the top-left -->
-        <div class="text-xl font-bold text-white bg-gray-600 rounded-full w-10 h-10 flex items-center justify-center">IL</div>
+        <div class="text-3xl font-extrabold text-gray-800 tracking-wide">IL</div>
         
         <!-- Navigation links on the top-right -->
         <nav class="flex items-center space-x-8">
-            <a href="#about" class="nav-link text-xl font-medium text-gray-400 hover:text-white transition-colors duration-300">About</a>
-            <a href="#education" class="nav-link text-xl font-medium text-gray-400 hover:text-white transition-colors duration-300">Education</a>
-            <a href="#work" class="nav-link text-xl font-medium text-gray-400 hover:text-white transition-colors duration-300">Work</a>
+            <a href="#about" class="nav-link text-lg font-medium text-gray-600 hover:text-black transition-colors duration-300">About</a>
+            <a href="#education" class="nav-link text-lg font-medium text-gray-600 hover:text-black transition-colors duration-300">Education</a>
+            <a href="#work" class="nav-link text-lg font-medium text-gray-600 hover:text-black transition-colors duration-300">Work</a>
         </nav>
     </header>
 
     <!-- About Section -->
     <section id="about" class="h-screen flex items-center justify-center p-8">
-        <div class="max-w-2xl text-center">
+        <div class="max-w-4xl text-center px-4">
             <!-- Drop shadow added to the title -->
-            <h1 class="text-5xl font-bold mb-4 content drop-shadow-lg">About Me</h1>
-            <p class="text-lg text-gray-300 content">
-                Hi, I'm [Your Name], a passionate web developer with a love for creating beautiful and functional user experiences. I'm skilled in modern web technologies and always eager to learn more.
+            <h1 class="text-6xl md:text-8xl font-extrabold mb-6 content drop-shadow-md tracking-tight">Meet I.L.</h1>
+            <p class="text-2xl md:text-3xl text-gray-700 content">
+                A designer-focused developer committed to crafting seamless, innovative digital experiences.
             </p>
         </div>
     </section>
 
     <!-- Education Section -->
-    <section id="education" class="h-screen flex items-center justify-center p-8 bg-[#161b22]">
-        <div class="max-w-2xl text-center">
-            <h2 class="text-5xl font-bold mb-4 content">Education</h2>
-            <p class="text-lg text-gray-300 content">
-                I graduated from [University Name] with a Bachelor of Science in Computer Science. My coursework included data structures, algorithms, and web development.
+    <section id="education" class="h-screen flex items-center justify-center p-8 bg-[#f5f5f7]">
+        <div class="max-w-4xl text-center px-4">
+            <h2 class="text-6xl md:text-8xl font-extrabold mb-6 content tracking-tight">My Path.</h2>
+            <p class="text-2xl md:text-3xl text-gray-700 content">
+                I graduated from **[University Name]** with a Bachelor of Science in Computer Science, where I specialized in **[Your Specialty]**.
             </p>
         </div>
     </section>
 
     <!-- Work Section -->
-    <section id="work" class="h-screen flex items-center justify-center p-8">
-        <div class="max-w-2xl text-center">
-            <h2 class="text-5xl font-bold mb-4 content">Work Experience</h2>
-            <p class="text-lg text-gray-300 content">
-                I have worked as a Front-End Developer at [Company Name], where I focused on building responsive and accessible user interfaces using React and Tailwind CSS.
+    <section id="work" class="h-screen flex items-center justify-center p-8 bg-[#f5f5f7]">
+        <div class="max-w-4xl text-center px-4">
+            <h2 class="text-6xl md:text-8xl font-extrabold mb-6 content tracking-tight">The Work.</h2>
+            <p class="text-2xl md:text-3xl text-gray-700 content">
+                I have worked as a **[Your Role]** at **[Company Name]**, building responsive and engaging platforms using **[Your Technologies]**.
             </p>
         </div>
     </section>
@@ -70,34 +77,27 @@
         document.addEventListener('DOMContentLoaded', () => {
             const sections = document.querySelectorAll('section');
             const navLinks = document.querySelectorAll('.nav-link');
+            const header = document.querySelector('header');
 
             // Function to update the opacity of elements based on scroll position
             const updateOpacity = () => {
                 sections.forEach(section => {
-                    // Get the position and dimensions of the section
                     const sectionTop = section.getBoundingClientRect().top;
                     const sectionHeight = section.offsetHeight;
                     const viewportHeight = window.innerHeight;
 
-                    // Calculate the visibility ratio (from 0 to 1)
-                    // The animation starts when the section enters the bottom of the viewport
-                    // and ends when it's fully visible.
-                    const startAnimationAt = viewportHeight * 0.75; // Start fading in when 75% of section is in view
-                    const endAnimationAt = viewportHeight * 0.25; // Full opacity when 25% of section is in view
+                    const startAnimationAt = viewportHeight * 0.85; // Start fading in when 85% of section is in view
+                    const endAnimationAt = viewportHeight * 0.4;  // Full opacity when 40% of section is in view
                     
                     let visibility = 0;
                     if (sectionTop < startAnimationAt && sectionTop > endAnimationAt) {
-                        // Calculate a dynamic opacity value based on scroll position within the trigger zone
                         visibility = 1 - (sectionTop - endAnimationAt) / (startAnimationAt - endAnimationAt);
                     } else if (sectionTop <= endAnimationAt) {
-                        // Fully visible
                         visibility = 1;
                     } else {
-                        // Not visible yet
                         visibility = 0;
                     }
                     
-                    // Fade out as the section goes to the top of the viewport
                     const fadeOutStart = -sectionHeight * 0.5; // Start fading out when 50% of the section is past the top
                     const fadeOutEnd = 0;
                     if (sectionTop < fadeOutEnd && sectionTop > fadeOutStart) {
@@ -106,7 +106,6 @@
                       visibility = 0;
                     }
 
-                    // Apply the calculated opacity to all 'content' elements in the section
                     const contents = section.querySelectorAll('.content');
                     contents.forEach(content => {
                         content.style.opacity = visibility;
@@ -114,10 +113,10 @@
                 });
             };
 
-            // This observer handles the active state of the navigation links
+            // This observer handles the active state of the navigation links and the header's blur effect
             const navObserverOptions = {
                 root: null,
-                rootMargin: '-50% 0px -50% 0px', // A margin to make the active state trigger when the section is in the middle of the screen
+                rootMargin: '-50% 0px -50% 0px',
                 threshold: 0
             };
 
@@ -127,26 +126,28 @@
                     const navLink = document.querySelector(`a[href="#${id}"]`);
 
                     if (entry.isIntersecting) {
-                        navLinks.forEach(link => link.classList.remove('text-white'));
+                        navLinks.forEach(link => link.classList.remove('text-black'));
                         if (navLink) {
-                            navLink.classList.add('text-white');
+                            navLink.classList.add('text-black');
                         }
                     }
                 });
+                
+                // Add/remove the header blur effect class based on scroll position
+                if (window.scrollY > 10) {
+                    header.classList.add('header-scrolled');
+                } else {
+                    header.classList.remove('header-scrolled');
+                }
             }, navObserverOptions);
 
             sections.forEach(section => {
-                // Observe sections for the active nav link
                 navObserver.observe(section);
             });
             
-            // Initial call to set the correct opacity and nav link state
             updateOpacity();
-
-            // Listen for scroll events to update the opacity in real-time
             window.addEventListener('scroll', updateOpacity);
 
-            // This handles the fast smooth scroll animation when a nav link is clicked.
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
