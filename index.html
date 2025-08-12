@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <!-- Use Tailwind CSS for a modern, minimalistic look -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define the font and base styles */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* GitHub-like dark background */
+            color: #c9d1d9; /* Light text color */
+        }
+        /* Custom styles for content that will be dynamically faded */
+        .content {
+            transition: opacity 0.5s ease-out; /* Smooth transition for opacity changes */
+            opacity: 0; /* Start with content hidden */
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 p-6 bg-transparent transition-all duration-300 flex items-center justify-between">
+        <!-- Logo on the top-left -->
+        <div class="text-xl font-bold text-white bg-gray-600 rounded-full w-10 h-10 flex items-center justify-center">IL</div>
+        
+        <!-- Navigation links on the top-right -->
+        <nav class="flex items-center space-x-8">
+            <a href="#about" class="nav-link text-xl font-medium text-gray-400 hover:text-white transition-colors duration-300">About</a>
+            <a href="#education" class="nav-link text-xl font-medium text-gray-400 hover:text-white transition-colors duration-300">Education</a>
+            <a href="#work" class="nav-link text-xl font-medium text-gray-400 hover:text-white transition-colors duration-300">Work</a>
+        </nav>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="h-screen flex items-center justify-center p-8">
+        <div class="max-w-2xl text-center">
+            <!-- Drop shadow added to the title -->
+            <h1 class="text-5xl font-bold mb-4 content drop-shadow-lg">About Me</h1>
+            <p class="text-lg text-gray-300 content">
+                Hi, I'm [Your Name], a passionate web developer with a love for creating beautiful and functional user experiences. I'm skilled in modern web technologies and always eager to learn more.
+            </p>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="h-screen flex items-center justify-center p-8 bg-[#161b22]">
+        <div class="max-w-2xl text-center">
+            <h2 class="text-5xl font-bold mb-4 content">Education</h2>
+            <p class="text-lg text-gray-300 content">
+                I graduated from [University Name] with a Bachelor of Science in Computer Science. My coursework included data structures, algorithms, and web development.
+            </p>
+        </div>
+    </section>
+
+    <!-- Work Section -->
+    <section id="work" class="h-screen flex items-center justify-center p-8">
+        <div class="max-w-2xl text-center">
+            <h2 class="text-5xl font-bold mb-4 content">Work Experience</h2>
+            <p class="text-lg text-gray-300 content">
+                I have worked as a Front-End Developer at [Company Name], where I focused on building responsive and accessible user interfaces using React and Tailwind CSS.
+            </p>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            // Function to update the opacity of elements based on scroll position
+            const updateOpacity = () => {
+                sections.forEach(section => {
+                    // Get the position and dimensions of the section
+                    const sectionTop = section.getBoundingClientRect().top;
+                    const sectionHeight = section.offsetHeight;
+                    const viewportHeight = window.innerHeight;
+
+                    // Calculate the visibility ratio (from 0 to 1)
+                    // The animation starts when the section enters the bottom of the viewport
+                    // and ends when it's fully visible.
+                    const startAnimationAt = viewportHeight * 0.75; // Start fading in when 75% of section is in view
+                    const endAnimationAt = viewportHeight * 0.25; // Full opacity when 25% of section is in view
+                    
+                    let visibility = 0;
+                    if (sectionTop < startAnimationAt && sectionTop > endAnimationAt) {
+                        // Calculate a dynamic opacity value based on scroll position within the trigger zone
+                        visibility = 1 - (sectionTop - endAnimationAt) / (startAnimationAt - endAnimationAt);
+                    } else if (sectionTop <= endAnimationAt) {
+                        // Fully visible
+                        visibility = 1;
+                    } else {
+                        // Not visible yet
+                        visibility = 0;
+                    }
+                    
+                    // Fade out as the section goes to the top of the viewport
+                    const fadeOutStart = -sectionHeight * 0.5; // Start fading out when 50% of the section is past the top
+                    const fadeOutEnd = 0;
+                    if (sectionTop < fadeOutEnd && sectionTop > fadeOutStart) {
+                      visibility = Math.min(visibility, (sectionTop - fadeOutStart) / (fadeOutEnd - fadeOutStart));
+                    } else if (sectionTop <= fadeOutStart) {
+                      visibility = 0;
+                    }
+
+                    // Apply the calculated opacity to all 'content' elements in the section
+                    const contents = section.querySelectorAll('.content');
+                    contents.forEach(content => {
+                        content.style.opacity = visibility;
+                    });
+                });
+            };
+
+            // This observer handles the active state of the navigation links
+            const navObserverOptions = {
+                root: null,
+                rootMargin: '-50% 0px -50% 0px', // A margin to make the active state trigger when the section is in the middle of the screen
+                threshold: 0
+            };
+
+            const navObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const id = entry.target.id;
+                    const navLink = document.querySelector(`a[href="#${id}"]`);
+
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => link.classList.remove('text-white'));
+                        if (navLink) {
+                            navLink.classList.add('text-white');
+                        }
+                    }
+                });
+            }, navObserverOptions);
+
+            sections.forEach(section => {
+                // Observe sections for the active nav link
+                navObserver.observe(section);
+            });
+            
+            // Initial call to set the correct opacity and nav link state
+            updateOpacity();
+
+            // Listen for scroll events to update the opacity in real-time
+            window.addEventListener('scroll', updateOpacity);
+
+            // This handles the fast smooth scroll animation when a nav link is clicked.
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
